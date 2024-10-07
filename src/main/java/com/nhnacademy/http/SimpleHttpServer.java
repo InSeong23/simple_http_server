@@ -97,7 +97,7 @@ public class SimpleHttpServer {
                 // html tag를 추가하세요.
                 responseBody.append("<body>");
                 responseBody.append("<h1>");
-                responseBody.append("hello hava");
+                responseBody.append("hello java");
                 responseBody.append("</h1>");
                 responseBody.append("</body>");
                 responseBody.append("</html>");

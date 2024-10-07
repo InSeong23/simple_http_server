@@ -29,17 +29,17 @@ import java.util.Optional;
 @Slf4j
 class SimpleHttpServerTest {
 
-    static int TEST_PORT=9999;
+    static int TEST_PORT = 9999;
 
     @BeforeAll
-    static void beforeAllSetUp(){
-        Thread thread = new Thread(()->{
+    static void beforeAllSetUp() {
+        Thread thread = new Thread(() -> {
             SimpleHttpServer simpleHttpServer = new SimpleHttpServer(TEST_PORT);
             try {
                 simpleHttpServer.start();
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.debug("exit!!!");
             }
         });
@@ -51,14 +51,14 @@ class SimpleHttpServerTest {
     void request1() throws URISyntaxException, IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(String.format("http://localhost:%d",TEST_PORT)))
+                .uri(new URI(String.format("http://localhost:%d", TEST_PORT)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
-        log.debug("response:{}",response.body());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        log.debug("response:{}", response.body());
 
-        //TODO#100 - response.statusCode() == 200 검증 합니다.
-
+        // TODO#100 - response.statusCode() == 200 검증 합니다.
+        Assertions.assertEquals(200, response.statusCode());
     }
 
     @Test
@@ -66,15 +66,19 @@ class SimpleHttpServerTest {
     void request2() throws URISyntaxException, IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(String.format("http://localhost:%d",TEST_PORT)))
+                .uri(new URI(String.format("http://localhost:%d", TEST_PORT)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        //TODO#101 - response.body() 'hello' or 'java' 문자열이 포함되었는지 검증 합니다.
+        // TODO#101 - response.body() 'hello' or 'java' 문자열이 포함되었는지 검증 합니다.
         Assertions.assertAll(
-
-        );
+                () -> {
+                    Assertions.assertTrue(response.body().contains("hello"));
+                },
+                () -> {
+                    Assertions.assertTrue(response.body().contains("java"));
+                });
     }
 
     @Test
@@ -82,16 +86,16 @@ class SimpleHttpServerTest {
     void request3() throws URISyntaxException, IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(String.format("http://localhost:%d",TEST_PORT)))
+                .uri(new URI(String.format("http://localhost:%d", TEST_PORT)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Optional<String> contentTypeOptional = response.headers().firstValue("Content-Type");
         String actual = contentTypeOptional.get().toLowerCase();
-        log.debug("contentType:{}",actual);
+        log.debug("contentType:{}", actual);
 
-        //TODO#102 contentType이 'text/html' 검증 합니다.
-
+        // TODO#102 contentType이 'text/html' 검증 합니다.
+        Assertions.assertTrue(actual.contains("text/html"));
 
     }
 
@@ -100,41 +104,40 @@ class SimpleHttpServerTest {
     void request4() throws URISyntaxException, IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(String.format("http://localhost:%d",TEST_PORT)))
+                .uri(new URI(String.format("http://localhost:%d", TEST_PORT)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Optional<String> contentTypeOptional = response.headers().firstValue("Content-Type");
         String actual = contentTypeOptional.get().toLowerCase();
-        log.debug("contentType:{}",actual);
+        log.debug("contentType:{}", actual);
 
-        //TODO#103 contentType header의 charset=utf-8 인지 검증 합니다.
+        // TODO#103 contentType header의 charset=utf-8 인지 검증 합니다.
+        Assertions.assertTrue(actual.contains("utf-8"));
 
     }
-
 
     @Test
     @DisplayName("Content-Length")
     void request5() throws URISyntaxException, IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(String.format("http://localhost:%d",TEST_PORT)))
+                .uri(new URI(String.format("http://localhost:%d", TEST_PORT)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         Optional<String> contentLengthOptional = response.headers().firstValue("Content-Length");
         String actual = contentLengthOptional.get();
 
-        log.debug("Content-Length:{}",actual);
+        log.debug("Content-Length:{}", actual);
 
-        //TODO#104 content-Length 값이 존재 하는지 검증 합니다.
+        // TODO#104 content-Length 값이 존재 하는지 검증 합니다.
 
     }
 
-
     @AfterAll
     static void tearDown() throws InterruptedException {
-       Thread.sleep(1000);
+        Thread.sleep(1000);
     }
 
 }
