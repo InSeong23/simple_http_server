@@ -16,8 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public interface HttpResponse {
-    //TODO#3 Http Response를 Abstraction한 interface 입니다.
-    
+
     /*
     * * Returns a <code>PrintWriter</code> object that can send character text to the client. The
      * <code>PrintWriter</code> uses the character encoding returned by {@link #getCharacterEncoding}. If the response's

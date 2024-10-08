@@ -17,21 +17,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.Objects;
+
 
 public class HttpResponseImpl implements HttpResponse {
-    // TODO#4 HttpResponse를 구현 합니다.
 
     private final Socket socket;
     private final DataOutputStream out;
-    private String charset = "UTF-8";
+    private String charset="UTF-8";
 
-    public HttpResponseImpl(Socket socket) {
-        if (Objects.isNull(socket))
-            throw new IllegalArgumentException("socker is null");
+    public HttpResponseImpl(Socket socket){
         this.socket = socket;
         try {
-            this.out = new DataOutputStream(socket.getOutputStream());
+            this.out =  new DataOutputStream (socket.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -39,7 +36,7 @@ public class HttpResponseImpl implements HttpResponse {
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        PrintWriter printWriter = new PrintWriter(out, false, Charset.forName(getCharacterEncoding()));
+        PrintWriter printWriter =  new PrintWriter(out,false, Charset.forName(getCharacterEncoding()));
         return printWriter;
     }
 

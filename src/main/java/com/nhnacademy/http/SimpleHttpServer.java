@@ -50,7 +50,7 @@ public class SimpleHttpServer {
         //workerThreadPool을 시작 합니다.
         workerThreadPool.start();
 
-        try(ServerSocket serverSocket = new ServerSocket(8080);){
+        try(ServerSocket serverSocket = new ServerSocket(this.port);){
             while(true){
                 Socket client = serverSocket.accept();
                 
