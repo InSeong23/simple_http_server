@@ -20,6 +20,7 @@ import com.nhnacademy.http.service.IndexHttpService;
 import com.nhnacademy.http.service.InfoHttpService;
 import com.nhnacademy.http.service.MethodNotAllowedService;
 import com.nhnacademy.http.service.NotFoundHttpService;
+import com.nhnacademy.http.service.RegisterService;
 import com.nhnacademy.http.util.CounterUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +63,7 @@ public class SimpleHttpServer {
         context.setAttribute("/info.html", new InfoHttpService());
         context.setAttribute("/404.html", new NotFoundHttpService());
         context.setAttribute("/405.html", new MethodNotAllowedService());
+        context.setAttribute("/register.html", new RegisterService());
         /*
          * TODO#5 Counter 구현을 위해서 CounterUtils.CONTEXT_COUNTER_NAME 으로, 0l 을 context에 등록
          * 합니다.

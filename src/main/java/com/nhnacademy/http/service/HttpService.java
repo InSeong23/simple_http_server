@@ -17,19 +17,20 @@ import com.nhnacademy.http.response.HttpResponse;
 
 public interface HttpService {
 
-    default void service(HttpRequest httpRequest, HttpResponse httpResponse){
-        if(httpRequest.getMethod().equals("GET")){
+    default void service(HttpRequest httpRequest, HttpResponse httpResponse) {
+        if (httpRequest.getMethod().equals("GET")) {
             doGet(httpRequest, httpResponse);
-        }else if(httpRequest.getMethod().equals("POST")){
+        } else if (httpRequest.getMethod().equals("POST")) {
             doPost(httpRequest, httpResponse);
         }
     }
 
-    default void doGet(HttpRequest httpRequest, HttpResponse httpResponse){
-
+    default void doGet(HttpRequest httpRequest, HttpResponse httpResponse) {
+        throw new RuntimeException("405 - Method not Allowd");
     }
 
-    default void doPost(HttpRequest httpRequest, HttpResponse httpResponse){
+    default void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
+        throw new RuntimeException("404 - Method not Allowd");
 
     }
 }
