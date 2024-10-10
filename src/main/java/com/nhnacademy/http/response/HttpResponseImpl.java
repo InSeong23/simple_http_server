@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.Objects;
 
 
 public class HttpResponseImpl implements HttpResponse {
@@ -26,6 +27,9 @@ public class HttpResponseImpl implements HttpResponse {
     private String charset="UTF-8";
 
     public HttpResponseImpl(Socket socket){
+        if(Objects.isNull(socket)){
+            throw new IllegalArgumentException("socket is null");
+        }
         this.socket = socket;
         try {
             this.out =  new DataOutputStream (socket.getOutputStream());

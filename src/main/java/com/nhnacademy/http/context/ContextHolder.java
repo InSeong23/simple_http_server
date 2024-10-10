@@ -10,26 +10,15 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.nhnacademy.http.service;
+package com.nhnacademy.http.context;
 
-import com.nhnacademy.http.request.HttpRequest;
-import com.nhnacademy.http.response.HttpResponse;
+//TODO#3 - Context에 접근할 수 있도록 ContextHolder를 Singleton 구현 합니다.
+//즉 Context가 web server 내에서 공유 됩니다.
 
-public interface HttpService {
+public class ContextHolder {
+    private static final Context context = new ApplicationContext();
 
-    default void service(HttpRequest httpRequest, HttpResponse httpResponse){
-        if(httpRequest.getMethod().equals("GET")){
-            doGet(httpRequest, httpResponse);
-        }else if(httpRequest.getMethod().equals("POST")){
-            doPost(httpRequest, httpResponse);
-        }
-    }
-
-    default void doGet(HttpRequest httpRequest, HttpResponse httpResponse){
-
-    }
-
-    default void doPost(HttpRequest httpRequest, HttpResponse httpResponse){
-
+    public static synchronized ApplicationContext getApplicationContext() {
+        return (ApplicationContext) context;
     }
 }
