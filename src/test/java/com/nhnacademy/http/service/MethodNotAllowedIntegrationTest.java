@@ -25,42 +25,56 @@ import java.net.http.HttpResponse;
 
 @Slf4j
 public class MethodNotAllowedIntegrationTest {
-    private static final int TEST_PORT=9999;
+    private static final int TEST_PORT = 9999;
     static SimpleHttpServer simpleHttpServer;
     static Thread thread;
+
     @BeforeAll
     static void setUp() throws IOException {
-        thread = new Thread(()->{
+        thread = new Thread(() -> {
             simpleHttpServer = new SimpleHttpServer(TEST_PORT);
             simpleHttpServer.start();
         });
         thread.start();
     }
 
-
     @Test
     @DisplayName("doPost : 405 method not allowed , /index.html")
     void doPost1() throws URISyntaxException, IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
-        String url = String.format("http://localhost:%d/index.html",TEST_PORT);
-        log.debug("url:{}",url);
+        String url = String.format("http://localhost:%d/index.html", TEST_PORT);
+        log.debug("url:{}", url);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(url))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        log.debug("response:{}",response.body());
+        log.debug("response:{}", response.body());
 
-        //TODO#107- response.statusCode() ==  405 검증 합니다.
-
+        // TODO#107- response.statusCode() == 405 검증 합니다.
+        Assertions.assertEquals(405, response.statusCode());
     }
+
     @Test
     @DisplayName("doPost : 405 method not allowed , /info.html")
     void doPost2() throws URISyntaxException, IOException, InterruptedException {
-        //TODO#108 - /info.html은 doGet 구현 되어있습니다. POST 요청을 했을 때 response.statusCode() == 405인지 검증 합니다.
+        // TODO#108 - /info.html은 doGet이구현 되어 있습니다. POST 요청을 했을 때 response.statusCode()
+        // == 405인지 검증 합니다.
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String url = String.format("http://localhost:%d/info.html", TEST_PORT);
+        log.debug("url:{}", url);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(url))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
 
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        log.debug("response:{}", response.body());
+
+        Assertions.assertEquals(405, response.statusCode());
     }
 
     @AfterAll

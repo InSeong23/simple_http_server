@@ -52,7 +52,7 @@ class IndexHttpServiceTest {
 
         // StringWriter를 사용하여 커스텀 버퍼 생성
         stringWriter = new StringWriter();
-        //printWriter에 stringWriter 주입.
+        // printWriter에 stringWriter 주입.
         printWriter = new PrintWriter(stringWriter);
         Mockito.when(httpResponse.getWriter()).thenReturn(printWriter);
 
@@ -60,7 +60,7 @@ class IndexHttpServiceTest {
 
     @Test
     @DisplayName("instance of HttpService")
-    void constructor(){
+    void constructor() {
         Assertions.assertInstanceOf(HttpService.class, new IndexHttpService());
     }
 
@@ -69,23 +69,29 @@ class IndexHttpServiceTest {
     void doGet() {
         Mockito.when(httpRequest.getMethod()).thenReturn("GET");
 
-        httpService.service(httpRequest,httpResponse);
+        httpService.service(httpRequest, httpResponse);
         String response = stringWriter.toString();
 
-        log.debug("response:{}",response);
-        //TODO#101- response 검증, httpStatuscode: 200, description: OK 검증 합니다.
+        log.debug("response:{}", response);
+        // TODO#101- response 검증, httpStatuscode: 200, description: OK 검증 합니다.
         Assertions.assertAll(
-
-        );
+                () -> {
+                    Assertions.assertTrue(response.contains(String.valueOf(ResponseUtils.HttpStatus.OK.getCode())));
+                },
+                () -> {
+                    Assertions
+                            .assertTrue(response.contains(String.valueOf(ResponseUtils.HttpStatus.OK.getDesription())));
+                });
     }
 
     @Test
     @DisplayName("doPost : 405 method not allowed")
-    void doPost(){
-        //TODO#102- response 검증,  request method = POST, RuntimeException이 발생 합니다.
+    void doPost() {
+        // TODO#102- response 검증, request method = POST, RuntimeException이 발생 합니다.
         Mockito.when(httpRequest.getMethod()).thenReturn("POST");
-
-
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            httpService.service(httpRequest, httpResponse);
+        });
     }
 
 }

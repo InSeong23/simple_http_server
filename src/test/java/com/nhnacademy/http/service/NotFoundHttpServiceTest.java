@@ -52,7 +52,7 @@ class NotFoundHttpServiceTest {
 
     @Test
     @DisplayName("instance of HttpService")
-    void constructor(){
+    void constructor() {
         Assertions.assertInstanceOf(HttpService.class, new MethodNotAllowedService());
     }
 
@@ -61,14 +61,20 @@ class NotFoundHttpServiceTest {
     void doGet() {
         Mockito.when(httpRequest.getMethod()).thenReturn("GET");
 
-        httpService.service(httpRequest,httpResponse);
+        httpService.service(httpRequest, httpResponse);
         String response = stringWriter.toString();
 
-        log.debug("response:{}",response);
+        log.debug("response:{}", response);
 
-        //TODO#105- response 검증, httpStatuscode: 404, description: Not Found 검증 합니다.
+        // TODO#105- response 검증, httpStatuscode: 404, description: Not Found 검증 합니다.
         Assertions.assertAll(
-
-        );
+                () -> {
+                    Assertions.assertTrue(
+                            response.contains(String.valueOf(ResponseUtils.HttpStatus.NOT_FOUND.getCode())));
+                },
+                () -> {
+                    Assertions.assertTrue(
+                            response.contains(String.valueOf(ResponseUtils.HttpStatus.NOT_FOUND.getDesription())));
+                });
     }
 }

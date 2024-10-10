@@ -54,7 +54,7 @@ class MethodNotAllowedServiceTest {
 
     @Test
     @DisplayName("instance of HttpService")
-    void constructor(){
+    void constructor() {
         Assertions.assertInstanceOf(HttpService.class, new MethodNotAllowedService());
     }
 
@@ -63,15 +63,22 @@ class MethodNotAllowedServiceTest {
     void doGet() {
         Mockito.when(httpRequest.getMethod()).thenReturn("GET");
 
-        httpService.service(httpRequest,httpResponse);
+        httpService.service(httpRequest, httpResponse);
         String response = stringWriter.toString();
 
-        log.debug("response:{}",response);
+        log.debug("response:{}", response);
 
-        //TODO#106- response 검증, httpStatuscode: 405, description: Method Not Allowed 검증 합니다.
+        // TODO#106- response 검증, httpStatuscode: 405, description: Method Not Allowed
+        // 검증 합니다.
 
         Assertions.assertAll(
-
-        );
+                () -> {
+                    Assertions.assertTrue(
+                            response.contains(String.valueOf(ResponseUtils.HttpStatus.METHOD_NOT_ALLOWED.getCode())));
+                },
+                () -> {
+                    Assertions.assertTrue(response
+                            .contains(String.valueOf(ResponseUtils.HttpStatus.METHOD_NOT_ALLOWED.getDesription())));
+                });
     }
 }

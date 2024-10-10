@@ -21,26 +21,36 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Slf4j
-public class IndexHttpService implements HttpService{
-    /*TODO#2 /index.html을  처리하는 HttpService 입니다.
-        - doGet()method를 구현 합니다.
-    */
+public class IndexHttpService implements HttpService {
+    /*
+     * TODO#2 /index.html을 처리하는 HttpService 입니다.
+     * - doGet()method를 구현 합니다.
+     */
 
     @Override
     public void doGet(HttpRequest httpRequest, HttpResponse httpResponse) {
-
-        //Body-설정
         String responseBody = null;
-        
-        //Header-설정
         String responseHeader = null;
+        // Body-설정
+        try {
+            responseBody = ResponseUtils.tryGetBodyFromFile(httpRequest.getRequestURI());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
 
-
-        //PrintWriter 응답
-        try(PrintWriter bufferedWriter = null){
-
-
+        // Header-설정
+        try {
+            responseHeader = ResponseUtils.createResponseHeader(200, "UTF-8", responseBody.getBytes("utf-8").length);
         } catch (Exception e) {
+            throw new RuntimeException();
+        }
+        // PrintWriter 응답
+        try (PrintWriter bufferedWriter = httpResponse.getWriter();) {
+            bufferedWriter.write(responseHeader);
+            bufferedWriter.write(responseBody);
+            bufferedWriter.flush();
+            log.debug("body {}", responseBody.toString());
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
