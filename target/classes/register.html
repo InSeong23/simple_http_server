@@ -1,27 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>register</title>
+    <title>Register</title>
 </head>
-
 <body>
-    <form method="post" action="./register.html" enctype="application/x-www-form-urlencoded">
+    <h1>회원가입</h1>
+    <form method="post" action="/register.html" enctype="application/x-www-form-urlencoded">
         <table>
             <tr>
                 <th>이름</th>
-                <td><input type="text" name="userId" value="marco"></td>
+                <td><input type="text" name="userId" value="marco" required></td>
             </tr>
 
             <tr>
                 <th>비밀번호</th>
-                <td><input type="password" name="userPassword" value="12345"></td>
+                <td><input type="password" name="userPassword" value="12345" required></td>
             </tr>
 
             <tr>
                 <th>이메일</th>
-                <td><input type="text" name="userEmail" value="marco@nhnacademy.com"></td>
+                <td><input type="email" name="userEmail" value="marco@nhnacademy.com" required></td>
             </tr>
 
             <tr>
@@ -29,9 +28,7 @@
                     <button type="submit">회원가입</button>
                 </td>
             </tr>
-
         </table>
     </form>
 </body>
-
 </html>

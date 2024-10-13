@@ -1,71 +1,91 @@
-/*
- * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- * + Copyright 2024. NHN Academy Corp. All rights reserved.
- * + * While every precaution has been taken in the preparation of this resource,  assumes no
- * + responsibility for errors or omissions, or for damages resulting from the use of the information
- * + contained herein
- * + No part of this resource may be reproduced, stored in a retrieval system, or transmitted, in any
- * + form or by any means, electronic, mechanical, photocopying, recording, or otherwise, without the
- * + prior written permission.
- * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- */
-
 package com.nhnacademy.http.service;
 
 import com.nhnacademy.http.request.HttpRequest;
 import com.nhnacademy.http.response.HttpResponse;
 import com.nhnacademy.http.util.CounterUtils;
 import com.nhnacademy.http.util.ResponseUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-@Slf4j
 public class InfoHttpService implements HttpService {
+
+    @Override
+    public void service(HttpRequest httpRequest, HttpResponse httpResponse) {
+        String method = httpRequest.getMethod();
+
+        if ("GET".equalsIgnoreCase(method)) {
+            doGet(httpRequest, httpResponse);
+        } else {
+            throw new RuntimeException("405 - Method Not Allowed");
+        }
+    }
+
     @Override
     public void doGet(HttpRequest httpRequest, HttpResponse httpResponse) {
-        // Body-설정
-        String responseBody = null;
-
-        try {
-            responseBody = ResponseUtils.tryGetBodyFromFile(httpRequest.getRequestURI());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        String id = httpRequest.getParameter("id");
+        // 쿼리 파라미터에서 'name' 추출
         String name = httpRequest.getParameter("name");
-        name = URLDecoder.decode(name, StandardCharsets.UTF_8);
-        String age = httpRequest.getParameter("age");
-
-        log.debug("id:{}", id);
-        log.debug("name:{}", name);
-        log.debug("age:{}", age);
-
-        responseBody = responseBody.replace("${id}", id);
-        responseBody = responseBody.replace("${name}", name);
-        responseBody = responseBody.replace("${age}", age);
-
-        // TODO#10 CounterUtils.increaseAndGet()를 이용해서 context에 있는 counter 값을 증가시키고,
-        // 반환되는 값을 info.html에 반영 합니다.
-        // ${count} <-- counter 값을 치환 합니다.
-        responseBody = responseBody.replace("${count}", String.valueOf((CounterUtils.increaseAndGet())));
-
-        // Header-설정
-        String responseHeader = ResponseUtils.createResponseHeader(200, "UTF-8", responseBody.getBytes().length);
-
-        // PrintWriter 응답
-        try (PrintWriter bufferedWriter = httpResponse.getWriter();) {
-            bufferedWriter.write(responseHeader);
-            bufferedWriter.write(responseBody);
-            bufferedWriter.write("\n");
-            bufferedWriter.flush();
-            log.debug("body:{}", responseBody.toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (name == null || name.isEmpty()) {
+            name = "Unknown";
         }
+
+        // 카운트 증가
+        long count = CounterUtils.increaseAndGet();
+
+        // info.html 템플릿 읽기 및 동적 대체
+        try {
+            String responseBody = ResponseUtils.tryGetBodyFromFile("/info.html");
+            responseBody = responseBody.replace("${name}", sanitize(name));
+            responseBody = responseBody.replace("${count}", String.valueOf(count));
+
+            // 응답 헤더 생성
+            String responseHeader = ResponseUtils.createResponseHeader(
+                    ResponseUtils.HttpStatus.OK.getCode(),
+                    httpResponse.getCharacterEncoding(),
+                    responseBody.getBytes(StandardCharsets.UTF_8).length
+            );
+
+            // 응답 전송
+            PrintWriter writer = httpResponse.getWriter();
+            writer.write(responseHeader);
+            writer.write(responseBody);
+            writer.flush();
+        } catch (IOException e) {
+            // 에러 발생 시 500 Internal Server Error 응답
+            String errorResponse = "<html><body><h1>500 Internal Server Error</h1></body></html>";
+            String errorHeader = ResponseUtils.createResponseHeader(
+                    ResponseUtils.HttpStatus.INTERNAL_SERVER_ERROR.getCode(),
+                    httpResponse.getCharacterEncoding(),
+                    errorResponse.getBytes(StandardCharsets.UTF_8).length
+            );
+            try {
+                PrintWriter writer = httpResponse.getWriter();
+                writer.write(errorHeader);
+                writer.write(errorResponse);
+                writer.flush();
+            } catch (IOException ioException) {
+                throw new RuntimeException(ioException);
+            }
+        }
+    }
+
+    @Override
+    public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
+        // POST 요청은 허용되지 않음
+        throw new RuntimeException("405 - Method Not Allowed");
+    }
+
+    /**
+     * 입력된 문자열을 간단히 이스케이프 처리하여 XSS 방지
+     *
+     * @param input 사용자 입력
+     * @return 이스케이프 처리된 문자열
+     */
+    private String sanitize(String input) {
+        if (input == null) return "";
+        return input.replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;");
     }
 }
